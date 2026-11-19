@@ -72,6 +72,7 @@ class FileServiceTest {
     void requestUploadUrl_success() {
         UploadUrlRequest request = new UploadUrlRequest("test.pdf", "application/pdf", 2048L);
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(fileRepository.save(any(StoredFile.class))).thenAnswer(i -> i.getArgument(0));
         when(storageService.createUploadUrl(any(), eq("application/pdf"), eq(2048L), any(Duration.class)))
                 .thenReturn(Map.of("uploadUrl", "https://s3.example.com/upload", "headers", Map.of("Content-Type", "application/pdf")));
 

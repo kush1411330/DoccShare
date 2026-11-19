@@ -63,22 +63,26 @@ public class FileService {
         UUID fileId = UUID.randomUUID();
         String sanitizedName = sanitizeFilename(request.getFileName());
         String storageKey = String.format("users/%s/%s/%s", userId, fileId, UUID.randomUUID());
+        String contentType = (request.getContentType() != null && !request.getContentType().isBlank())
+                ? request.getContentType()
+                : "application/octet-stream";
 
         StoredFile file = StoredFile.builder()
                 .id(fileId)
                 .owner(owner)
                 .originalName(sanitizedName)
                 .storageKey(storageKey)
-                .contentType(request.getContentType() != null ? request.getContentType() : "application/octet-stream")
+                .contentType(contentType)
                 .sizeBytes(request.getSizeBytes())
                 .status(FileStatus.PENDING)
                 .build();
 
-        file = fileRepository.save(file);
+        StoredFile saved = fileRepository.save(file);
+        UUID actualFileId = (saved != null && saved.getId() != null) ? saved.getId() : fileId;
 
         Map<String, Object> urlData = storageService.createUploadUrl(
                 storageKey,
-                file.getContentType(),
+                contentType,
                 request.getSizeBytes(),
                 Duration.ofMinutes(uploadUrlExpiryMinutes)
         );
@@ -87,10 +91,10 @@ public class FileService {
         Map<String, String> headers = (Map<String, String>) urlData.get("headers");
         String uploadUrl = (String) urlData.get("uploadUrl");
 
-        log.info("Issued upload URL for file: {} (id: {}) by user: {}", sanitizedName, fileId, userId);
+        log.info("Issued upload URL for file: {} (id: {}) by user: {}", sanitizedName, actualFileId, userId);
 
         return UploadUrlResponse.builder()
-                .fileId(fileId)
+                .fileId(actualFileId)
                 .uploadUrl(uploadUrl)
                 .headers(headers)
                 .build();
