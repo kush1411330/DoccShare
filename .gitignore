@@ -1,0 +1,22 @@
+# System and environment
+.env
+.DS_Store
+Thumbs.db
+
+# Backend artifacts
+backend/target/
+backend/.mvn/timing.properties
+*.class
+
+# Frontend artifacts
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/coverage/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.suo
+*.user
