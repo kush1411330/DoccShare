@@ -74,7 +74,7 @@ public class FileService {
                 .status(FileStatus.PENDING)
                 .build();
 
-        fileRepository.save(file);
+        file = fileRepository.save(file);
 
         Map<String, Object> urlData = storageService.createUploadUrl(
                 storageKey,
@@ -111,7 +111,7 @@ public class FileService {
         if (actualSize > maxUploadBytes) {
             storageService.deleteObject(file.getStorageKey());
             file.setStatus(FileStatus.DELETED);
-            fileRepository.save(file);
+            file = fileRepository.save(file);
             throw new BadRequestException("Uploaded file exceeds allowed size limit");
         }
 
