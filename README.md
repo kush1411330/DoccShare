@@ -95,15 +95,80 @@ The following environment variables configure the platform:
 | `JWT_SECRET` | 32-byte hex string | HMAC-SHA256 secret key for signing tokens |
 | `JWT_EXPIRY_MINUTES`| `60` | JWT token validity lifespan |
 | `IP_HASH_SALT` | `cloudshare-salt` | Cryptographic salt for privacy-preserving IP hashing |
-| `S3_ENDPOINT` | `http://localhost:9000` | S3-compatible storage endpoint URL |
-| `S3_REGION` | `us-east-1` | S3 region identifier |
+| `S3_ENDPOINT` | `http://localhost:9000` | S3-compatible storage endpoint URL (or R2 endpoint) |
+| `S3_PUBLIC_ENDPOINT` | `http://localhost:9000` | External endpoint returned in presigned URLs for client browsers |
+| `S3_REGION` | `us-east-1` (or `auto` for R2)| S3 region identifier |
 | `S3_BUCKET` | `cloudshare-files` | Target storage bucket name |
 | `S3_ACCESS_KEY` | `minioadmin` | S3 access key / credential |
 | `S3_SECRET_KEY` | `minioadmin` | S3 secret access key |
-| `S3_PATH_STYLE` | `true` | Enable path-style S3 access (required for MinIO) |
+| `S3_PATH_STYLE` | `true` | Enable path-style S3 access (required for MinIO / R2) |
 | `MAX_UPLOAD_BYTES` | `104857600` | Maximum upload size threshold (100 MB default) |
 | `CORS_ALLOWED_ORIGINS`| `http://localhost:4200,...` | Comma-separated list of permitted CORS origins |
 | `PUBLIC_BASE_URL` | `http://localhost:4200` | Public-facing client domain used for generating share links |
+
+---
+
+## Production Cloud Deployment (Cloudflare R2 + Managed Postgres)
+
+CloudShare is designed to run seamlessly on modern cloud platforms with **zero hosting cost** using 100% free tiers.
+
+### 1. File Storage: Cloudflare R2 (100% Free Tier, No Paywall)
+- **Free Allowance**: 10 GB storage free/month, 1,000,000 free uploads (Class A operations)/month, 10,000,000 free downloads (Class B operations)/month, and **$0 egress fees** (unlimited free bandwidth).
+- **Setup**:
+  1. In Cloudflare Dashboard, go to **R2** → **Create bucket** (e.g. `cloudshare-files`).
+  2. Under bucket **Settings** → **CORS Policy**, add:
+     ```json
+     [
+       {
+         "AllowedOrigins": ["http://localhost:4200", "https://your-frontend.vercel.app"],
+         "AllowedMethods": ["GET", "PUT", "HEAD"],
+         "AllowedHeaders": ["*"],
+         "MaxAgeSeconds": 3600
+       }
+     ]
+     ```
+  3. Under **Manage R2 API Tokens**, create an API token with *Object Read & Write* permissions.
+  4. Note down your `Access Key ID`, `Secret Access Key`, and endpoint:
+     `https://<account-id>.r2.cloudflarestorage.com`.
+
+### 2. Managed Database: Neon / Supabase (Free Tier)
+- Create a free PostgreSQL instance on [Neon.tech](https://neon.tech) or [Supabase.com](https://supabase.com).
+- Copy the provided connection string and convert to JDBC format:
+  ```env
+  DB_URL=jdbc:postgresql://<host>:5432/<dbname>?sslmode=require
+  DB_USER=<username>
+  DB_PASSWORD=<password>
+  ```
+- Flyway migrations run automatically on backend startup.
+
+### 3. Backend Deployment: Railway / Render (Free Tier)
+- Point Railway or Render to your GitHub repository `backend/` folder. It detects `backend/Dockerfile` automatically.
+- Set environment variables:
+  ```env
+  PORT=8080
+  DB_URL=jdbc:postgresql://<host>:5432/<dbname>?sslmode=require
+  DB_USER=<username>
+  DB_PASSWORD=<password>
+  JWT_SECRET=<32-byte-hex-string>
+  S3_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
+  S3_PUBLIC_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
+  S3_REGION=auto
+  S3_BUCKET=cloudshare-files
+  S3_ACCESS_KEY=<r2-access-key>
+  S3_SECRET_KEY=<r2-secret-key>
+  S3_PATH_STYLE=true
+  CORS_ALLOWED_ORIGINS=https://your-frontend.vercel.app,http://localhost:4200
+  PUBLIC_BASE_URL=https://your-frontend.vercel.app
+  ```
+- Set health check path to `/actuator/health`.
+- The entrypoint includes `-XX:MaxRAMPercentage=75` to fit within small container memory allocations.
+
+### 4. Frontend Deployment: Vercel / Cloudflare Pages / Netlify (Free Tier)
+- Connect repository and select `frontend/` directory.
+- Build command: `npm run build`
+- Output directory: `dist/cloudshare-frontend/browser`
+- Add SPA rewrite rule (`/* -> /index.html`) so refreshing links like `/s/:token` resolves correctly.
+- Set `apiBaseUrl` in `environment.prod.ts` to your Railway/Render backend URL.
 
 ---
 
