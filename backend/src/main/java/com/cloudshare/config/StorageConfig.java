@@ -18,6 +18,9 @@ public class StorageConfig {
     @Value("${cloudshare.s3.endpoint:http://localhost:9000}")
     private String endpoint;
 
+    @Value("${cloudshare.s3.public-endpoint:}")
+    private String publicEndpoint;
+
     @Value("${cloudshare.s3.region:us-east-1}")
     private String region;
 
@@ -50,8 +53,12 @@ public class StorageConfig {
                 .pathStyleAccessEnabled(pathStyle)
                 .build();
 
+        String presignerEndpoint = (publicEndpoint != null && !publicEndpoint.isBlank())
+                ? publicEndpoint.trim()
+                : endpoint;
+
         return S3Presigner.builder()
-                .endpointOverride(URI.create(endpoint))
+                .endpointOverride(URI.create(presignerEndpoint))
                 .region(Region.of(region))
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey)))
                 .serviceConfiguration(serviceConfiguration)

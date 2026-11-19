@@ -24,7 +24,8 @@ services:
     environment:
       MINIO_ROOT_USER: ${S3_ACCESS_KEY:-minioadmin}
       MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-minioadmin}
-      MINIO_API_CORS_ALLOW_ORIGIN: "*"
+      MINIO_API_CORS_ALLOW_ORIGIN: "http://localhost:4200,http://localhost:80,http://localhost,*"
+      MINIO_SERVER_URL: "http://localhost:9000"
     command: server /data --console-address ":9001"
     ports:
       - "9000:9000"
@@ -70,6 +71,7 @@ services:
       JWT_SECRET: ${JWT_SECRET:-404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
       JWT_EXPIRY_MINUTES: ${JWT_EXPIRY_MINUTES:-60}
       S3_ENDPOINT: http://minio:9000
+      S3_PUBLIC_ENDPOINT: ${S3_PUBLIC_ENDPOINT:-http://localhost:9000}
       S3_REGION: ${S3_REGION:-us-east-1}
       S3_BUCKET: ${S3_BUCKET:-cloudshare-files}
       S3_ACCESS_KEY: ${S3_ACCESS_KEY:-minioadmin}

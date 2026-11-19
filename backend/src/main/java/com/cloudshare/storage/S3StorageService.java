@@ -13,10 +13,12 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequ
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
+import jakarta.annotation.PostConstruct;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -33,6 +35,39 @@ public class S3StorageService implements StorageService {
     public S3StorageService(S3Client s3Client, S3Presigner s3Presigner) {
         this.s3Client = s3Client;
         this.s3Presigner = s3Presigner;
+    }
+
+    @PostConstruct
+    public void initBucket() {
+        try {
+            try {
+                s3Client.headBucket(HeadBucketRequest.builder().bucket(bucket).build());
+                log.info("S3 bucket '{}' verified.", bucket);
+            } catch (NoSuchBucketException e) {
+                log.info("S3 bucket '{}' not found, creating bucket...", bucket);
+                s3Client.createBucket(CreateBucketRequest.builder().bucket(bucket).build());
+            }
+
+            CORSRule corsRule = CORSRule.builder()
+                    .allowedOrigins("*")
+                    .allowedMethods("GET", "PUT", "POST", "DELETE", "HEAD")
+                    .allowedHeaders("*")
+                    .exposeHeaders("ETag")
+                    .maxAgeSeconds(3600)
+                    .build();
+
+            CORSConfiguration corsConfig = CORSConfiguration.builder()
+                    .corsRules(List.of(corsRule))
+                    .build();
+
+            s3Client.putBucketCors(PutBucketCorsRequest.builder()
+                    .bucket(bucket)
+                    .corsConfiguration(corsConfig)
+                    .build());
+            log.info("S3 bucket '{}' CORS policy applied successfully.", bucket);
+        } catch (Exception e) {
+            log.warn("Could not automatically configure bucket/CORS on '{}': {}", bucket, e.getMessage());
+        }
     }
 
     @Override
