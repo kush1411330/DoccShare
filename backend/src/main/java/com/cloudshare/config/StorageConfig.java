@@ -37,6 +37,8 @@ public class StorageConfig {
     public S3Client s3Client() {
         S3Configuration serviceConfiguration = S3Configuration.builder()
                 .pathStyleAccessEnabled(pathStyle)
+                .checksumValidationEnabled(false)
+                .chunkedEncodingEnabled(false)
                 .build();
 
         return S3Client.builder()
@@ -51,6 +53,8 @@ public class StorageConfig {
     public S3Presigner s3Presigner() {
         S3Configuration serviceConfiguration = S3Configuration.builder()
                 .pathStyleAccessEnabled(pathStyle)
+                .checksumValidationEnabled(false)
+                .chunkedEncodingEnabled(false)
                 .build();
 
         String presignerEndpoint = (publicEndpoint != null && !publicEndpoint.isBlank())

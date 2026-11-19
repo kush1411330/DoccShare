@@ -73,15 +73,12 @@ public class S3StorageService implements StorageService {
     @Override
     public Map<String, Object> createUploadUrl(String key, String contentType, long size, Duration ttl) {
         try {
-            PutObjectRequest.Builder putBuilder = PutObjectRequest.builder()
+            // Do not bind contentType into the SigV4 signature so browsers can stream PUT
+            // without signature mismatch caused by charset or client header variations.
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucket)
-                    .key(key);
-
-            if (contentType != null && !contentType.isBlank()) {
-                putBuilder.contentType(contentType);
-            }
-
-            PutObjectRequest putObjectRequest = putBuilder.build();
+                    .key(key)
+                    .build();
 
             PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
                     .signatureDuration(ttl)
