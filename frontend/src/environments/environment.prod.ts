@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiBaseUrl: '/api'
+  apiBaseUrl: 'https://cloudshare-backend-xxxx.onrender.com/api'
 };
