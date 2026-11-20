@@ -34,7 +34,7 @@ public class AnalyticsService {
     private final UserAgentParser userAgentParser;
     private final GeoIpService geoIpService;
 
-    @Value("${DoccShare.app.ip-hash-salt:DoccShare-salt-for-privacy-preserving-hashing}")
+    @Value("${doccshare.app.ip-hash-salt:${IP_HASH_SALT:cloudshare-salt-for-privacy-preserving-hashing}}")
     private String ipHashSalt;
 
     public AnalyticsService(

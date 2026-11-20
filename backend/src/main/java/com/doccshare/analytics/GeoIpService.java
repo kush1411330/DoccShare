@@ -25,7 +25,7 @@ public class GeoIpService {
 
     public GeoIpService(
             ResourceLoader resourceLoader,
-            @Value("${DoccShare.app.geoip-db-path:}") String geoipDbPath
+            @Value("${doccshare.app.geoip-db-path:${GEOIP_DB_PATH:}}") String geoipDbPath
     ) {
         this.resourceLoader = resourceLoader;
         this.geoipDbPath = geoipDbPath;

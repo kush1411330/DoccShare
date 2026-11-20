@@ -23,10 +23,10 @@ public class JwtService {
 
     private static final Logger log = LoggerFactory.getLogger(JwtService.class);
 
-    @Value("${DoccShare.jwt.secret}")
+    @Value("${doccshare.jwt.secret:${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}}")
     private String secret;
 
-    @Value("${DoccShare.jwt.expiry-minutes:60}")
+    @Value("${doccshare.jwt.expiry-minutes:60}")
     private long expiryMinutes;
 
     private SecretKey key;

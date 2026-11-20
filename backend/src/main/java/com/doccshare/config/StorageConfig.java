@@ -15,22 +15,22 @@ import java.net.URI;
 @Configuration
 public class StorageConfig {
 
-    @Value("${DoccShare.s3.endpoint:http://localhost:9000}")
+    @Value("${doccshare.s3.endpoint:${S3_ENDPOINT:http://localhost:9000}}")
     private String endpoint;
 
-    @Value("${DoccShare.s3.public-endpoint:}")
+    @Value("${doccshare.s3.public-endpoint:${S3_PUBLIC_ENDPOINT:}}")
     private String publicEndpoint;
 
-    @Value("${DoccShare.s3.region:us-east-1}")
+    @Value("${doccshare.s3.region:${S3_REGION:us-east-1}}")
     private String region;
 
-    @Value("${DoccShare.s3.access-key:minioadmin}")
+    @Value("${doccshare.s3.access-key:${S3_ACCESS_KEY:minioadmin}}")
     private String accessKey;
 
-    @Value("${DoccShare.s3.secret-key:minioadmin}")
+    @Value("${doccshare.s3.secret-key:${S3_SECRET_KEY:minioadmin}}")
     private String secretKey;
 
-    @Value("${DoccShare.s3.path-style:true}")
+    @Value("${doccshare.s3.path-style:${S3_PATH_STYLE:true}}")
     private boolean pathStyle;
 
     @Bean

@@ -13,7 +13,7 @@ import java.util.List;
 @Configuration
 public class CorsConfig {
 
-    @Value("${DoccShare.cors.allowed-origins:http://localhost:4200,http://localhost:80,http://localhost}")
+    @Value("${doccshare.cors.allowed-origins:${CORS_ALLOWED_ORIGINS:http://localhost:4200,http://localhost:80,http://localhost,*}}")
     private String allowedOrigins;
 
     @Bean

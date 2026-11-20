@@ -15,10 +15,10 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class RateLimitService {
 
-    @Value("${DoccShare.ratelimit.auth-attempts-per-minute:10}")
+    @Value("${doccshare.ratelimit.auth-attempts-per-minute:10}")
     private int authAttemptsPerMinute;
 
-    @Value("${DoccShare.ratelimit.download-requests-per-minute:30}")
+    @Value("${doccshare.ratelimit.download-requests-per-minute:30}")
     private int downloadRequestsPerMinute;
 
     private final Map<String, Bucket> authBuckets = new ConcurrentHashMap<>();

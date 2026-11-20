@@ -29,7 +29,7 @@ public class S3StorageService implements StorageService {
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
 
-    @Value("${DoccShare.s3.bucket:DoccShare-files}")
+    @Value("${doccshare.s3.bucket:${S3_BUCKET:cloudshare-files}}")
     private String bucket;
 
     public S3StorageService(S3Client s3Client, S3Presigner s3Presigner) {

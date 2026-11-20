@@ -36,10 +36,10 @@ public class ShareService {
 
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
-    @Value("${DoccShare.app.public-base-url:http://localhost:4200}")
+    @Value("${doccshare.app.public-base-url:${PUBLIC_BASE_URL:http://localhost:4200}}")
     private String publicBaseUrl;
 
-    @Value("${DoccShare.storage.download-url-expiry-seconds:60}")
+    @Value("${doccshare.storage.download-url-expiry-seconds:60}")
     private long downloadUrlExpirySeconds;
 
     public ShareService(

@@ -33,10 +33,10 @@ public class FileService {
     private final ShareLinkRepository shareLinkRepository;
     private final StorageService storageService;
 
-    @Value("${DoccShare.storage.max-upload-bytes:104857600}")
+    @Value("${doccshare.storage.max-upload-bytes:${MAX_UPLOAD_BYTES:104857600}}")
     private long maxUploadBytes;
 
-    @Value("${DoccShare.storage.upload-url-expiry-minutes:10}")
+    @Value("${doccshare.storage.upload-url-expiry-minutes:10}")
     private long uploadUrlExpiryMinutes;
 
     public FileService(

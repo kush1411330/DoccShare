@@ -29,14 +29,14 @@ spring:
       max-file-size: ${MAX_UPLOAD_BYTES:104857600}
       max-request-size: ${MAX_UPLOAD_BYTES:104857600}
 
-# CloudShare Application Configuration
-cloudshare:
+# DoccShare Application Configuration
+doccshare:
   jwt:
     secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
     expiry-minutes: ${JWT_EXPIRY_MINUTES:60}
   s3:
     endpoint: ${S3_ENDPOINT:http://localhost:9000}
-    public-endpoint: ${S3_PUBLIC_ENDPOINT:${cloudshare.s3.endpoint}}
+    public-endpoint: ${S3_PUBLIC_ENDPOINT:${doccshare.s3.endpoint}}
     region: ${S3_REGION:us-east-1}
     bucket: ${S3_BUCKET:cloudshare-files}
     access-key: ${S3_ACCESS_KEY:minioadmin}
@@ -55,6 +55,32 @@ cloudshare:
   ratelimit:
     auth-attempts-per-minute: 10
     download-requests-per-minute: 30
+
+cloudshare:
+  jwt:
+    secret: ${doccshare.jwt.secret}
+    expiry-minutes: ${doccshare.jwt.expiry-minutes}
+  s3:
+    endpoint: ${doccshare.s3.endpoint}
+    public-endpoint: ${doccshare.s3.public-endpoint}
+    region: ${doccshare.s3.region}
+    bucket: ${doccshare.s3.bucket}
+    access-key: ${doccshare.s3.access-key}
+    secret-key: ${doccshare.s3.secret-key}
+    path-style: ${doccshare.s3.path-style}
+  storage:
+    max-upload-bytes: ${doccshare.storage.max-upload-bytes}
+    upload-url-expiry-minutes: ${doccshare.storage.upload-url-expiry-minutes}
+    download-url-expiry-seconds: ${doccshare.storage.download-url-expiry-seconds}
+  cors:
+    allowed-origins: ${doccshare.cors.allowed-origins}
+  app:
+    public-base-url: ${doccshare.app.public-base-url}
+    geoip-db-path: ${doccshare.app.geoip-db-path}
+    ip-hash-salt: ${doccshare.app.ip-hash-salt}
+  ratelimit:
+    auth-attempts-per-minute: ${doccshare.ratelimit.auth-attempts-per-minute}
+    download-requests-per-minute: ${doccshare.ratelimit.download-requests-per-minute}
 
 # Actuator & OpenAPI
 management:
