@@ -12,15 +12,7 @@ services:
         value: 8080
       - key: SPRING_PROFILES_ACTIVE
         value: prod
-      - key: DB_HOST
-        value: dpg-dbvj5at9fdbs73bdes3g-a
-      - key: DB_PORT
-        value: 5432
-      - key: DB_NAME
-        value: cloudshare
-      - key: DB_USER
-        value: cloudshare
-      - key: DB_PASSWORD
+      - key: DB_URL
         sync: false
       - key: JWT_SECRET
         value: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
